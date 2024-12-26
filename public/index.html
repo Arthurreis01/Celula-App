@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <!-- Add the viewport meta tag for responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos de Oração</title>
+    <!-- Include Bootstrap CSS and Font Awesome Icons -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Font Awesome (for icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="main-content">
+        <div class="container">
+            <!-- Header Section -->
+            <div class="app-header">
+                <img src="logo.png" alt="Logo" class="tiny-logo">
+                <h5>Compartilhe seus Pedidos de Oração</h5>
+            </div>
+
+            <!-- Notifications and Social Media Icons Section -->
+            <div class="notifications">
+                <button id="notifications-btn" class="btn btn-light"><i class="fas fa-bell"></i></button>
+                <a href="https://www.youtube.com/@oceanicaniteroi" id="youtube-link" class="social-icon"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.instagram.com/igrejaoceanica/" id="instagram-link" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://open.spotify.com/show/0xpTkBuEZViDJorDoZb3uj?si=ooFmuR_6SQOpUJkAsmXT_Q" id="spotify-link" class="social-icon"><i class="fab fa-spotify"></i></a>
+            </div>
+
+            <!-- Sections for Prayer Requests -->
+            <div id="prayer-section" class="section prayer-section">
+                <div id="prayer-requests-container" class="scrollable-container"></div>
+            </div>
+
+            <!-- Answered Prayers Section -->
+            <div id="answered-section" class="section answered-section" style="display: none;">
+                <div id="answered-requests-container" class="scrollable-container"></div>
+            </div>
+
+            <!-- Floating Add New Request Button -->
+            <button id="new-request-btn" class="floating-btn">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+
+        <!-- Footer Buttons for Prayer Requests and Answers -->
+        <div class="footer">
+            <button id="prayer-requests-btn" class="footer-btn active">Pedidos de Oração</button>
+            <button id="prayer-answers-btn" class="footer-btn">Respostas de Oração</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Notifications Modal -->
+    <div class="modal fade" id="notificationsModal" tabindex="-1" role="dialog" aria-labelledby="notificationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h3 class="modal-title" id="notificationsModalLabel">Notificações</h3>
+                    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <!-- Notifications Content -->
+                    <div id="notifications-content">
+                        <!-- This content can be dynamically loaded from Firestore if needed -->
+                        <h4>Tema: A MESA DA SALVAÇÃO - Mt 9.9-13 | Jônatas Davies </h4>
+                        <p>1ª lição: Somos salvos por uma ação unilateral e graciosa de Deus</p>
+                        <p>2ª lição: A salvação é para quem se reconhece pecador.</p>
+                        <h4>Aplicações da Semana</h4>
+                        <p> 1ª Aplicação: Hoje, Jesus lhe convida a sentar à mesa da salvação.</p>
+                        <p> 2ª Aplicação: Faça da sua mesa um lugar de salvação.</p>
+                        <h4>Avisos da Semana</h4>
+                        <p>Retiro 2025! Faça sua inscrição !</p>
+                        <p>Evento da célula - 06/12/2024</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- Pop-up Form for Adding a New Request -->
+    <div id="new-card-form" class="new-card-form" style="display: none;">
+        <div class="form-content">
+            <h4>Adicionar Novo Pedido</h4>
+            <input type="text" id="new-title" placeholder="Título" class="form-control">
+            <textarea id="new-summary" placeholder="Resumo" class="form-control"></textarea>
+            <input type="text" id="new-name" placeholder="Seu Nome" class="form-control">
+            <button class="btn btn-success" id="add-card-btn">Adicionar Pedido</button>
+        </div>
+    </div>
+
+    <!-- Comment Modal -->
+    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Modal Content -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Adicionar Comentário</h5>
+                    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="comment-name" class="form-control" placeholder="Seu Nome">
+                    <textarea id="comment-input" class="form-control mt-2" placeholder="Digite seu comentário aqui..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="save-comment-btn" class="btn btn-primary">Salvar Comentário</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Comment Modal -->
+    <div class="modal fade" id="editCommentModal" tabindex="-1" role="dialog" aria-labelledby="editCommentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Modal Content -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Comentário</h5>
+                    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="edit-comment-name" class="form-control" placeholder="Seu Nome">
+                    <textarea id="edit-comment-input" class="form-control mt-2" placeholder="Digite seu comentário aqui..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="save-edit-comment-btn" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content delete-modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza de que deseja excluir este pedido?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="confirm-delete-btn" class="btn btn-danger">Excluir</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Answer Modal -->
+    <div class="modal fade" id="answerModal" tabindex="-1" role="dialog" aria-labelledby="answerModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Modal Content -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Adicionar Resposta</h5>
+                    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="answer-input" class="form-control" placeholder="Digite sua resposta aqui..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="save-answer-btn" class="btn btn-primary">Salvar Resposta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Comments Modal -->
+    <div class="modal fade" id="allCommentsModal" tabindex="-1" role="dialog" aria-labelledby="allCommentsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Modal Content -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Todos os Comentários</h5>
+                    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="all-comments-content">
+                    <!-- All comments will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Prayer Request Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <!-- Modal Content -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Pedido</h5>
+                    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="edit-title" class="form-control" placeholder="Título">
+                    <textarea id="edit-summary" class="form-control mt-2" placeholder="Resumo"></textarea>
+                    <input type="text" id="edit-name" class="form-control mt-2" placeholder="Seu Nome">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="save-edit-btn" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include jQuery and Bootstrap JS for modal functionality -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Use the proper Bootstrap JS version -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase App (Core SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <!-- Firebase Analytics -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Include your script.js file -->
+    <script src="script.js"></script>
+</body>
+</html>
